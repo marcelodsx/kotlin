@@ -38,11 +38,19 @@ class IrFieldImpl(
     override val type: KotlinType,
     override val visibility: Visibility
 ) : IrDeclarationBase(startOffset, endOffset, origin), IrField {
-    constructor(startOffset: Int, endOffset: Int, origin: IrDeclarationOrigin, symbol: IrFieldSymbol) :
-            this(
-                startOffset, endOffset, origin, symbol,
-                symbol.descriptor.name, symbol.descriptor.type, symbol.descriptor.visibility
-            )
+
+    constructor(
+        startOffset: Int,
+        endOffset: Int,
+        origin: IrDeclarationOrigin,
+        symbol: IrFieldSymbol,
+        initializer: IrExpressionBody? = null
+    ) : this(
+        startOffset, endOffset, origin, symbol,
+        symbol.descriptor.name, symbol.descriptor.type, symbol.descriptor.visibility
+    ) {
+        this.initializer = initializer
+    }
 
     constructor(startOffset: Int, endOffset: Int, origin: IrDeclarationOrigin, descriptor: PropertyDescriptor) :
             this(startOffset, endOffset, origin, IrFieldSymbolImpl(descriptor))
