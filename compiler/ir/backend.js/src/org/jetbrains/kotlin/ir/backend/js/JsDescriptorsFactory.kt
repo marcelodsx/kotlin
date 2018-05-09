@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.ir.symbols.impl.IrConstructorSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrFieldSymbolImpl
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.dump
+import org.jetbrains.kotlin.ir.util.isInner
 import org.jetbrains.kotlin.name.Name
 import java.util.*
 
@@ -44,7 +45,7 @@ class JsDescriptorsFactory(
     override fun getSymbolForEnumEntry(enumEntry: IrEnumEntrySymbol): IrFieldSymbol = TODO()
 
     override fun getOuterThisFieldSymbol(innerClass: IrClass): IrFieldSymbol =
-        if (!innerClass.descriptor.isInner) throw AssertionError("Class is not inner: ${innerClass.dump()}")
+        if (!innerClass.isInner) throw AssertionError("Class is not inner: ${innerClass.dump()}")
         else outerThisFieldSymbols.getOrPut(innerClass) {
             val outerClass = innerClass.parent as? IrClass
                     ?: throw AssertionError("No containing class for inner class ${innerClass.dump()}")
@@ -78,7 +79,7 @@ class JsDescriptorsFactory(
 
     override fun getInnerClassConstructorWithOuterThisParameter(innerClassConstructor: IrConstructor): IrConstructorSymbol {
         val innerClass = innerClassConstructor.parent as IrClass
-        assert(innerClass.descriptor.isInner) { "Class is not inner: $innerClass" }
+        assert(innerClass.isInner) { "Class is not inner: $innerClass" }
 
         return innerClassConstructors.getOrPut(innerClassConstructor.symbol) {
             createInnerClassConstructorWithOuterThisParameter(innerClassConstructor.descriptor)

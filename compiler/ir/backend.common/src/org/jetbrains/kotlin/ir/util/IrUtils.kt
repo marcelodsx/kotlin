@@ -234,6 +234,10 @@ val IrValueParameter.type: KotlinType
 val IrClass.defaultType: KotlinType
     get() = this.descriptor.defaultType
 
+//TODO: Remove when IrClass.isInner member would be added
+val IrClass.isInner: Boolean
+    get() = this.descriptor.isInner
+
 val IrSimpleFunction.isReal: Boolean get() = descriptor.kind.isReal
 
 // This implementation is from kotlin-native

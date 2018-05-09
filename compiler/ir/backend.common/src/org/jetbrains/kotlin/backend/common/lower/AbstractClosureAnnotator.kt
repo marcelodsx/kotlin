@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.ir.expressions.IrCatch
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrValueAccessExpression
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.util.isInner
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
@@ -119,7 +120,7 @@ class ClosureAnnotator   {
             closureBuilders[declaration.descriptor] = closureBuilder
 
             closureBuilder.declareVariable(classDescriptor.thisAsReceiverParameter)
-            if (classDescriptor.isInner) {
+            if (declaration.isInner) {
                 closureBuilder.declareVariable((classDescriptor.containingDeclaration as ClassDescriptor).thisAsReceiverParameter)
                 includeInParent(closureBuilder)
             }
