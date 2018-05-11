@@ -1,17 +1,6 @@
 /*
- * Copyright 2010-2015 JetBrains s.r.o.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
+ * that can be found in the license/LICENSE.txt file.
  */
 
 package org.jetbrains.kotlin.idea.j2k
@@ -85,7 +74,11 @@ object J2KPostProcessingRegistrar {
         registerIntentionBasedProcessing(FoldInitializerAndIfToElvisIntention())
 
         registerIntentionBasedProcessing(FoldIfToReturnIntention()) { it.then.isTrivialStatementBody() && it.`else`.isTrivialStatementBody() }
-        registerIntentionBasedProcessing(FoldIfToReturnAsymmetricallyIntention()) { it.then.isTrivialStatementBody() && (KtPsiUtil.skipTrailingWhitespacesAndComments(it) as KtReturnExpression).returnedExpression.isTrivialStatementBody() }
+        registerIntentionBasedProcessing(FoldIfToReturnAsymmetricallyIntention()) {
+            it.then.isTrivialStatementBody() && (KtPsiUtil.skipTrailingWhitespacesAndComments(
+                it
+            ) as KtReturnExpression).returnedExpression.isTrivialStatementBody()
+        }
 
         registerInspectionBasedProcessing(IfThenToSafeAccessInspection())
         registerIntentionBasedProcessing(IfThenToElvisIntention())
@@ -97,7 +90,9 @@ object J2KPostProcessingRegistrar {
         registerIntentionBasedProcessing(RemoveUnnecessaryParenthesesIntention())
         registerIntentionBasedProcessing(DestructureIntention())
         registerInspectionBasedProcessing(SimplifyAssertNotNullInspection())
-        registerIntentionBasedProcessing(RemoveRedundantCallsOfConversionMethodsIntention())
+        registerIntentionBasedProcessing(
+            RemoveRedundantCallsOfConversionMethodsIntention()
+        )
 
         registerDiagnosticBasedProcessing<KtBinaryExpressionWithTypeRHS>(Errors.USELESS_CAST) { element, _ ->
             val expression = RemoveUselessCastFix.invoke(element)
@@ -118,14 +113,12 @@ object J2KPostProcessingRegistrar {
         }
 
         registerDiagnosticBasedProcessingFactory(
-                Errors.VAL_REASSIGNMENT, Errors.CAPTURED_VAL_INITIALIZATION, Errors.CAPTURED_MEMBER_VAL_INITIALIZATION
-        ) {
-            element: KtSimpleNameExpression, _: Diagnostic ->
+            Errors.VAL_REASSIGNMENT, Errors.CAPTURED_VAL_INITIALIZATION, Errors.CAPTURED_MEMBER_VAL_INITIALIZATION
+        ) { element: KtSimpleNameExpression, _: Diagnostic ->
             val property = element.mainReference.resolve() as? KtProperty
             if (property == null) {
                 null
-            }
-            else {
+            } else {
                 {
                     if (!property.isVar) {
                         property.valOrVarKeyword.replace(KtPsiFactory(element.project).createVarKeyword())
@@ -201,7 +194,14 @@ object J2KPostProcessingRegistrar {
             vararg diagnosticFactory: DiagnosticFactory<*>,
             crossinline fix: (TElement, Diagnostic) -> Unit
     ) {
-        registerDiagnosticBasedProcessingFactory(*diagnosticFactory) { element: TElement, diagnostic: Diagnostic -> { fix(element, diagnostic) } }
+        registerDiagnosticBasedProcessingFactory(*diagnosticFactory) { element: TElement, diagnostic: Diagnostic ->
+            {
+                fix(
+                    element,
+                    diagnostic
+                )
+            }
+        }
     }
 
     private inline fun <reified TElement : KtElement> registerDiagnosticBasedProcessingFactory(
